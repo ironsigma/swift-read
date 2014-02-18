@@ -34,6 +34,57 @@ public class TokenizerTest {
     }
 
     @Test
+    public void testSplits() {
+        Tokenizer.tokenize(data, "one--two");
+        assertThat(data.size(), equalTo(3));
+        assertThat(data.get(0), equalTo("one"));
+        assertThat(data.get(1), equalTo("--"));
+        assertThat(data.get(2), equalTo("two"));
+
+        Tokenizer.tokenize(data, "one -- two");
+        assertThat(data.size(), equalTo(3));
+        assertThat(data.get(0), equalTo("one"));
+        assertThat(data.get(1), equalTo("--"));
+        assertThat(data.get(2), equalTo("two"));
+
+        Tokenizer.tokenize(data, "one--two--three");
+        assertThat(data.size(), equalTo(5));
+        assertThat(data.get(0), equalTo("one"));
+        assertThat(data.get(1), equalTo("--"));
+        assertThat(data.get(2), equalTo("two"));
+        assertThat(data.get(3), equalTo("--"));
+        assertThat(data.get(4), equalTo("three"));
+
+        Tokenizer.tokenize(data, "one -- two -- three");
+        assertThat(data.size(), equalTo(5));
+        assertThat(data.get(0), equalTo("one"));
+        assertThat(data.get(1), equalTo("--"));
+        assertThat(data.get(2), equalTo("two"));
+        assertThat(data.get(3), equalTo("--"));
+        assertThat(data.get(4), equalTo("three"));
+
+        Tokenizer.tokenize(data, "one--two--three--four");
+        assertThat(data.size(), equalTo(7));
+        assertThat(data.get(0), equalTo("one"));
+        assertThat(data.get(1), equalTo("--"));
+        assertThat(data.get(2), equalTo("two"));
+        assertThat(data.get(3), equalTo("--"));
+        assertThat(data.get(4), equalTo("three"));
+        assertThat(data.get(5), equalTo("--"));
+        assertThat(data.get(6), equalTo("four"));
+
+        Tokenizer.tokenize(data, "one -- two -- three -- four");
+        assertThat(data.size(), equalTo(7));
+        assertThat(data.get(0), equalTo("one"));
+        assertThat(data.get(1), equalTo("--"));
+        assertThat(data.get(2), equalTo("two"));
+        assertThat(data.get(3), equalTo("--"));
+        assertThat(data.get(4), equalTo("three"));
+        assertThat(data.get(5), equalTo("--"));
+        assertThat(data.get(6), equalTo("four"));
+    }
+
+    @Test
     public void testSpaces() {
         Tokenizer.tokenize(data, "one");
         assertThat(data.size(), equalTo(1));
@@ -96,8 +147,8 @@ public class TokenizerTest {
                 + "I love with a passion put to use\n"
                 + "In my old griefs, and with my childhood's faith.\n"
                 + "I love thee with a love I seemed to lose\n"
-                + "With my lost saints, -- I love thee with the breath,\n"
-                + "Smiles, tears, of all my life! -- and, if God choose,\n"
+                + "With my lost saints,--I love thee with the breath,\n"
+                + "Smiles, tears, of all my life!--and, if God choose,\n"
                 + "I shall but love thee better after death.";
 
         Iterator<String> itr;

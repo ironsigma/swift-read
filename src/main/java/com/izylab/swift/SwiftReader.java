@@ -16,6 +16,8 @@ import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
+import com.izylab.swift.file.FileReader;
+import com.izylab.swift.file.TextFileReader;
 import com.izylab.swift.util.TimerNotifier;
 import com.izylab.swift.util.TimerNotifierListener;
 
@@ -40,6 +42,9 @@ public final class SwiftReader extends JFrame
     /** Timer notifier. */
     private TimerNotifier timer = new TimerNotifier(INTERVAL_300_WPM);
 
+    /** File reader. */
+    private FileReader reader = new TextFileReader();
+
     /**
      * Create the application.
      */
@@ -59,7 +64,7 @@ public final class SwiftReader extends JFrame
             }
         });
 
-        readingLine.setText("Welcome");
+        readingLine.setText("Swift Reader");
         readingLine.setHorizontalAlignment(SwingConstants.CENTER);
         readingLine.setVerticalAlignment(SwingConstants.CENTER);
         readingLine.setFont(new Font(readingLine.getFont().getName(),
@@ -85,6 +90,7 @@ public final class SwiftReader extends JFrame
      */
     public void run() {
         LOG.info("Starting...");
+        reader.loadFile("/Through the Looking-Glass - Carroll Lewis.txt");
         timer.start();
     }
 
@@ -98,7 +104,10 @@ public final class SwiftReader extends JFrame
 
     @Override
     public void intervalElapsed() {
-        readingLine.setText("ms: " + System.currentTimeMillis());
+        if (!reader.hasNext()) {
+            timer.stopNotifications();
+        }
+        readingLine.setText(reader.getNext());
     }
 
     @Override

@@ -83,5 +83,24 @@ public final class Tokenizer {
         if (prevIndex != index) {
             tokenList.add(line.substring(prevIndex, index + 1));
         }
+
+        String token;
+        String[] split;
+        int insertIdx;
+        for (int i = tokenList.size() - 1; i >= 0; i--) {
+            token = tokenList.get(i);
+            if (token.contains("--")) {
+                insertIdx = i;
+                tokenList.remove(i);
+                while (!token.equals("--") && token.contains("--")) {
+                    split = token.split("--", 2);
+                    token = split[1];
+                    tokenList.add(insertIdx, split[0]);
+                    tokenList.add(insertIdx + 1, "--");
+                    insertIdx += 2;
+                }
+                tokenList.add(insertIdx, token);
+            }
+        }
     }
 }
