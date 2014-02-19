@@ -20,12 +20,15 @@ public final class TimerNotifier extends Thread {
     /** Last notification time. */
     private long lastNotificationTime = System.nanoTime();
 
+    /** Additional delay. */
+    private long delayNext = 0;
+
     /** Running flag. */
     private boolean running = true;
 
     /** Optimal notifications per second. */
     private final long optimalNotificationsPerSecond;
-
+    
     /**
      * Create a new timer.
      * @param interval Millisecond interval between notifications
@@ -33,6 +36,14 @@ public final class TimerNotifier extends Thread {
     public TimerNotifier(final int interval) {
         super();
         optimalNotificationsPerSecond = NANOS_IN_SECOND / interval;
+    }
+
+    /**
+     * Delay next notification.
+     * @param millis Additional ms to delay next notification
+     */
+    public void delayNext(final long millis) {
+        this.delayNext = millis;
     }
 
     /** Stop notifications. */
@@ -61,6 +72,11 @@ public final class TimerNotifier extends Thread {
 
                 Thread.sleep((lastNotificationTime - System.nanoTime()
                         + optimalNotificationsPerSecond) / MILLIS_IN_SECONDS);
+                if (delayNext != 0) {
+                    long delay = delayNext;
+                    delayNext = 0;
+                    Thread.sleep(delay);
+                }
             }
         } catch (InterruptedException ex) {
             running = false;

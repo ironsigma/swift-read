@@ -122,7 +122,15 @@ public final class SwiftReader extends JFrame
             readingLine.setText("-- End --");
             return;
         }
-        readingLine.setText(reader.getNext());
+        String word = reader.getNext();
+
+        // delay an extra 50 ms for longer words
+        // TODO: compute??? beggining 
+        if (word.length() > 10) {
+            timer.delayNext(50);
+        }
+
+        readingLine.setText(word);
         positionLabel.setText(reader.getPosition().toString());
     }
 
