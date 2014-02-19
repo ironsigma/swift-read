@@ -11,13 +11,15 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
 import com.izylab.swift.file.FileReader;
-import com.izylab.swift.file.TextFilePosition;
 import com.izylab.swift.file.TextFileReader;
 import com.izylab.swift.util.TimerNotifier;
 import com.izylab.swift.util.TimerNotifierListener;
@@ -41,10 +43,10 @@ public final class SwiftReader extends JFrame
     private JLabel positionLabel = new JLabel();
 
     /** Default interval. */
-    private static final int INTERVAL_300_WPM = 5;
+    private static final int WORDS_PER_MINUTE = 300;
 
     /** Timer notifier. */
-    private TimerNotifier timer = new TimerNotifier(INTERVAL_300_WPM);
+    private TimerNotifier timer = new TimerNotifier();
 
     /** File reader. */
     private FileReader reader;
@@ -54,6 +56,7 @@ public final class SwiftReader extends JFrame
      */
     public SwiftReader() {
         addWindowListener(this);
+        timer.setInterval(WORDS_PER_MINUTE);
         timer.addListener(this);
 
         JButton startButton = new JButton(new AbstractAction() {
@@ -64,15 +67,39 @@ public final class SwiftReader extends JFrame
 
             @Override
             public void actionPerformed(final ActionEvent e) {
-                run();
+                if (timer.isRunning()) {
+                    timer.stop();
+                } else {
+                    timer.start();
+                }
             }
         });
+
+        reader = new TextFileReader(
+                "/Through the Looking-Glass - Carroll Lewis.txt");
 
         readingLine.setText("Swift Reader");
         readingLine.setHorizontalAlignment(SwingConstants.CENTER);
         readingLine.setVerticalAlignment(SwingConstants.CENTER);
         readingLine.setFont(new Font(readingLine.getFont().getName(),
                 Font.PLAIN, 64));
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        menuBar.add(fileMenu);
+        JMenuItem quitMenuItem = new JMenuItem(new AbstractAction() {
+            private static final long serialVersionUID = 1L;
+            {
+                putValue(NAME, "Quit");
+            }
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                dispose();
+            }
+        });
+        fileMenu.add(quitMenuItem);
+        setJMenuBar(menuBar);
 
         JPanel statusPanel = new JPanel();
         statusPanel.add(positionLabel);
@@ -94,20 +121,6 @@ public final class SwiftReader extends JFrame
     }
 
     /**
-     * Start the application.
-     */
-    public void run() {
-        LOG.info("Starting...");
-        reader = new TextFileReader(
-                "/Through the Looking-Glass - Carroll Lewis.txt");
-
-        TextFilePosition position = new TextFilePosition();
-        reader.setPosition(position);
-
-        timer.start();
-    }
-
-    /**
      * Main.
      * @param args Command line arguments
      */
@@ -118,7 +131,7 @@ public final class SwiftReader extends JFrame
     @Override
     public void intervalElapsed() {
         if (!reader.hasNext()) {
-            timer.stopNotifications();
+            timer.stop();
             readingLine.setText("-- End --");
             return;
         }
@@ -137,7 +150,7 @@ public final class SwiftReader extends JFrame
     @Override
     public void windowClosing(final WindowEvent e) {
         LOG.info("Closing window");
-        timer.stopNotifications();
+        timer.shutdown();
     }
 
     @Override
