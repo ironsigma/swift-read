@@ -9,15 +9,13 @@ public class TextFileReaderTest {
 
     @Test
     public void loadFileTest() {
-        FileReader fr = new TextFileReader();
-        fr.loadFile("/Through the Looking-Glass - Carroll Lewis.txt");
+        FileReader fr = new TextFileReader("/Through the Looking-Glass - Carroll Lewis.txt");
         assertThat(fr.hasNext(), equalTo(true));
     }
     
     @Test
     public void getTokenTest() {
-        FileReader fr = new TextFileReader();
-        fr.loadFile("/Through the Looking-Glass - Carroll Lewis.txt");
+        FileReader fr = new TextFileReader("/Through the Looking-Glass - Carroll Lewis.txt");
         assertThat(fr.hasNext(), equalTo(true));
         String str = fr.getNext();
         assertThat(str, equalTo("The"));

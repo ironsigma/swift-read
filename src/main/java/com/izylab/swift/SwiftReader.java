@@ -17,6 +17,7 @@ import javax.swing.SwingConstants;
 import org.apache.log4j.Logger;
 
 import com.izylab.swift.file.FileReader;
+import com.izylab.swift.file.TextFilePosition;
 import com.izylab.swift.file.TextFileReader;
 import com.izylab.swift.util.TimerNotifier;
 import com.izylab.swift.util.TimerNotifierListener;
@@ -36,6 +37,9 @@ public final class SwiftReader extends JFrame
     /** Reading Text Label. */
     private JLabel readingLine = new JLabel();
 
+    /** Current position label. */
+    private JLabel positionLabel = new JLabel();
+
     /** Default interval. */
     private static final int INTERVAL_300_WPM = 5;
 
@@ -43,7 +47,7 @@ public final class SwiftReader extends JFrame
     private TimerNotifier timer = new TimerNotifier(INTERVAL_300_WPM);
 
     /** File reader. */
-    private FileReader reader = new TextFileReader();
+    private FileReader reader;
 
     /**
      * Create the application.
@@ -70,16 +74,20 @@ public final class SwiftReader extends JFrame
         readingLine.setFont(new Font(readingLine.getFont().getName(),
                 Font.PLAIN, 64));
 
+        JPanel statusPanel = new JPanel();
+        statusPanel.add(positionLabel);
+        statusPanel.add(startButton);
+
         JPanel readingPanel = new JPanel();
         readingPanel.setLayout(new BorderLayout());
         readingPanel.add(readingLine);
-        readingPanel.add(startButton, BorderLayout.SOUTH);
+        readingPanel.add(statusPanel, BorderLayout.SOUTH);
 
         setLayout(new BorderLayout());
         getContentPane().add(readingPanel);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(800, 200));
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
@@ -90,7 +98,12 @@ public final class SwiftReader extends JFrame
      */
     public void run() {
         LOG.info("Starting...");
-        reader.loadFile("/Through the Looking-Glass - Carroll Lewis.txt");
+        reader = new TextFileReader(
+                "/Through the Looking-Glass - Carroll Lewis.txt");
+
+        TextFilePosition position = new TextFilePosition();
+        reader.setPosition(position);
+
         timer.start();
     }
 
@@ -106,8 +119,11 @@ public final class SwiftReader extends JFrame
     public void intervalElapsed() {
         if (!reader.hasNext()) {
             timer.stopNotifications();
+            readingLine.setText("-- End --");
+            return;
         }
         readingLine.setText(reader.getNext());
+        positionLabel.setText(reader.getPosition().toString());
     }
 
     @Override

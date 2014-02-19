@@ -5,12 +5,6 @@ package com.izylab.swift.file;
  */
 public interface FileReader {
     /**
-     * Load a file.
-     * @param file File to load
-     */
-    void loadFile(String file);
-
-    /**
      * See if more word(s) are available.
      * @return true if data is still available, false otherwise.
      */
@@ -21,4 +15,21 @@ public interface FileReader {
      * @return words to display.
      */
     String getNext();
+
+    /**
+     * Get the current position in the file.
+     * @return the position.
+     */
+    Position getPosition();
+
+    /**
+     * Set the current position.
+     * @param position the position to set.
+     */
+    void setPosition(Position position);
+
+    /**
+     * Close the file reader.
+     */
+    void close();
 }
